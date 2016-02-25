@@ -49,4 +49,4 @@ vudio.dance();
 // 另外还有.pause()方法来暂停可视化效果
 ```
 
-在线示例: https://margox.me/demo/vudiojs
+在线示例: https://margox.me/demos/vudio/
