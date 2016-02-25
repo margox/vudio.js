@@ -6,9 +6,12 @@
 - 动画效果基于Canvas和requestAnimationFrame，丝般顺滑
 - 仅供娱乐，开心就好
 
-#### 说明
-> 使用方法: var vudio = new Vudio(HTMLAudioElement, HTMLCanvasElement, [option]);
+#### 使用方法
 
+```javascript
+var vudio = new Vudio(HTMLAudioElement, HTMLCanvasElement, [option]);
+vudio.dance();
+```
 以上，第一个和第二个参数是必填项，第三个用于显示效果的个性化配置,具体情况看下方示例
 
 #### 示例
@@ -41,6 +44,9 @@ var vudio = new Vudio(audioObj, canvasObj, {
         symmetry : true  // 显示对称波形
     }
 });
+// 调用dance方法
+vudio.dance();
+// 另外还有.pause()方法来暂停可视化效果
 ```
 
 在线示例: https://margox.me/demo/vudiojs
