@@ -13,19 +13,18 @@
 
 #### 示例
 在你的HTML文件中放入canvas和audio标签
-```
+```html
 <canvas width="256px" height="100px" id="canvas"></canvas>
 <audio src="./path/to/audio.mp3" controls id="audio"></audio>
 ```
 引入Vudio.js
-```
+```html
 <script src="path/to/vudio.js"></script>
 ```
 > 注意：模块已经过UMD包装哦
 
 开始搅基
-```
-<script>
+```javascript
 var audioObj = document.quertSelector('#audio');
 var canvasObj = document.quertSelector('#canvas');
 var vudio = new Vudio(audioObj, canvasObj, {
@@ -42,7 +41,6 @@ var vudio = new Vudio(audioObj, canvasObj, {
         symmetry : true  // 显示对称波形
     }
 });
-</script>
 ```
 
 在线示例: https://margox.me/demo/vudiojs
