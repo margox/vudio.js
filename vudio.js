@@ -58,6 +58,7 @@
         this.audioEle = audioElement;
         this.canvasEle = canvasElement;
         this.option = __mergeOption(__default_option, option);
+        this.meta = {};
 
         this.stat = 0;
         this.freqByteData = null;
@@ -100,7 +101,8 @@
                 source = audioContext.createMediaElementSource(this.audioEle),
                 dpr = window.devicePixelRatio || 1;
 
-            this.analyser = audioContext.createAnalyser(),
+            this.analyser = audioContext.createAnalyser();
+            this.meta.spr = audioContext.sampleRate;
 
             source.connect(this.analyser);
             this.analyser.fftSize = this.option.bandwidth * 2;
@@ -135,8 +137,10 @@
 
         // 开始
         dance : function() {
-            this.stat = 1;
-            this.__animate();
+            if (this.stat === 0) {
+                this.stat = 1;
+                this.__animate();
+            }
         },
 
         // 暂停
