@@ -35,7 +35,8 @@
             shadowBlur : true,
             shadowColor : '#f00',
             fadeSide : true,
-            symmetry : true
+            horizontalAlign : 'center',
+            verticalAlign: 'middle'
         }
     }
 
@@ -161,16 +162,23 @@
                         __freqByteData;
 
                     // rebuild freqByteData
-                    if (__that.option.waveform.symmetry) {
+                    if (__that.option.waveform.horizontalAlign === 'center') {
                         __freqByteData = [].concat(
                             Array.from(freqByteData).reverse().splice(__that.option.bandwidth / 2, __that.option.bandwidth / 2),
                             Array.from(freqByteData).splice(0, __that.option.bandwidth / 2)
                         );
-                    } else {
+                    } else if (__that.option.waveform.horizontalAlign === 'left') {
                         __freqByteData = freqByteData;
                         __that.option.waveform.fadeSide = false;
+                    } else if (__that.option.waveform.horizontalAlign === 'right') {
+                        __freqByteData = Array.from(freqByteData).reverse();
+                        __that.option.waveform.fadeSide = false;
+                    } else {
+                        __freqByteData = [].concat(
+                            Array.from(freqByteData).reverse().splice(__that.option.bandwidth / 2, __that.option.bandwidth / 2),
+                            Array.from(freqByteData).splice(0, __that.option.bandwidth / 2)
+                        );
                     }
-                    
 
                     // clear canvas
                     __that.context2d.clearRect(0, 0, __that.width, __that.height);
@@ -190,7 +198,16 @@
 
                         __height = height / 256 * __option.maxHeight;
                         __height = __height < __option.minHeight ? __option.minHeight : __height;
-                        __top = (__that.height - __height) / 2;
+                        if (__option.verticalAlign === 'middle') {
+                            __top = (__that.height - __height) / 2;
+                        } else if (__option.verticalAlign === 'top') {
+                            __top = 0;
+                        } else if (__option.verticalAlign === 'bottom') {
+                            __top = __that.height - __height;
+                        } else {
+                            __top = (__that.height - __height) / 2;
+                        }
+                        
                         __color = __option.color;
 
                         if (__color instanceof Array) {
