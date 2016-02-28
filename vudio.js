@@ -147,6 +147,7 @@
                 waveform : function (freqByteData) {
 
                     var __freqByteData;
+                    var __fadeSide = __that.option.waveform.fadeSide;
 
                     // rebuild freqByteData
                     if (__that.option.waveform.horizontalAlign === 'center') {
@@ -156,10 +157,10 @@
                         );
                     } else if (__that.option.waveform.horizontalAlign === 'left') {
                         __freqByteData = freqByteData;
-                        __that.option.waveform.fadeSide = false;
+                        __fadeSide = false;
                     } else if (__that.option.waveform.horizontalAlign === 'right') {
                         __freqByteData = Array.from(freqByteData).reverse();
-                        __that.option.waveform.fadeSide = false;
+                        __fadeSide = false;
                     } else {
                         __freqByteData = [].concat(
                             Array.from(freqByteData).reverse().splice(__that.option.accuracy / 2, __that.option.accuracy / 2),
@@ -231,7 +232,7 @@
                             __that.context2d.shadowColor = __option.shadowColor;
                         }
 
-                        if (__option.fadeSide) {
+                        if (__fadeSide) {
                             if (index <= __that.option.accuracy / 2) {
                                 __that.context2d.globalAlpha = 1 - (__that.option.accuracy / 2 - 1 - index) / ( __that.option.accuracy / 2);
                             } else {
