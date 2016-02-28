@@ -248,7 +248,7 @@
             }
 
         },
-    
+
         // 开始
         dance : function() {
             if (this.stat === 0) {
