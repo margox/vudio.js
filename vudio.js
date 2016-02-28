@@ -9,14 +9,13 @@
     /*
      * 添加UMD支持
      */
-    var root = root || window;
 
     if (typeof exports === 'object') {
          module.exports = factory();
     } else if (typeof define === 'function' && define.amd) {
          define(factory);
-    } else if (root) {
-         root.Vudio = factory();
+    } else {
+         window.Vudio = factory();
     }
 
  })(function() {
@@ -26,13 +25,15 @@
     // 默认参数
     var __default_option = {
         effect : 'waveform', // 当前只有'waveform'这一个效果，哈哈哈
-        bandwidth : 256, // 频谱数组的长度
+        accuracy : 128, // 精度，范围16-16348，必须为2的N次方
+        width : 256, // canvas宽度，会覆盖canvas标签中定义的宽度
+        height : 100, // canvas高度，会覆盖canvas标签中定义的高度
         waveform : {
-            maxHeight : 100,
+            maxHeight : 80,
             minHeight : 1,
+            spacing: 1,
             color : '#f00',
-            width : 2,
-            shadowBlur : true,
+            shadowBlur : 0,
             shadowColor : '#f00',
             fadeSide : true,
             horizontalAlign : 'center',
@@ -106,13 +107,13 @@
             this.meta.spr = audioContext.sampleRate;
 
             source.connect(this.analyser);
-            this.analyser.fftSize = this.option.bandwidth * 2;
+            this.analyser.fftSize = this.option.accuracy * 2;
             this.analyser.connect(audioContext.destination);
 
             this.freqByteData = new Uint8Array(this.analyser.frequencyBinCount);
             this.context2d = this.canvasEle.getContext('2d');
-            this.width = this.canvasEle.width;
-            this.height = this.canvasEle.height;
+            this.width = this.option.width;
+            this.height = this.option.height;
 
             // ready for HD screen
             this.context2d.canvas.width = this.width * dpr;
@@ -136,19 +137,6 @@
             (typeof this.__effects()[this.option.effect] === 'function') && this.__effects()[this.option.effect](this.freqByteData);
         },
 
-        // 开始
-        dance : function() {
-            if (this.stat === 0) {
-                this.stat = 1;
-                this.__animate();
-            }
-        },
-
-        // 暂停
-        pause : function() {
-            this.stat = 0;
-        },
-
         // effect functions
         __effects : function() {
 
@@ -158,14 +146,13 @@
 
                 waveform : function (freqByteData) {
 
-                    var __top,
-                        __freqByteData;
+                    var __freqByteData;
 
                     // rebuild freqByteData
                     if (__that.option.waveform.horizontalAlign === 'center') {
                         __freqByteData = [].concat(
-                            Array.from(freqByteData).reverse().splice(__that.option.bandwidth / 2, __that.option.bandwidth / 2),
-                            Array.from(freqByteData).splice(0, __that.option.bandwidth / 2)
+                            Array.from(freqByteData).reverse().splice(__that.option.accuracy / 2, __that.option.accuracy / 2),
+                            Array.from(freqByteData).splice(0, __that.option.accuracy / 2)
                         );
                     } else if (__that.option.waveform.horizontalAlign === 'left') {
                         __freqByteData = freqByteData;
@@ -175,8 +162,8 @@
                         __that.option.waveform.fadeSide = false;
                     } else {
                         __freqByteData = [].concat(
-                            Array.from(freqByteData).reverse().splice(__that.option.bandwidth / 2, __that.option.bandwidth / 2),
-                            Array.from(freqByteData).splice(0, __that.option.bandwidth / 2)
+                            Array.from(freqByteData).reverse().splice(__that.option.accuracy / 2, __that.option.accuracy / 2),
+                            Array.from(freqByteData).splice(0, __that.option.accuracy / 2)
                         );
                     }
 
@@ -187,17 +174,19 @@
                     __freqByteData.forEach(function(height, index){
 
                         var __option = __that.option.waveform,
+                            __width = (__that.width - __that.option.accuracy * __option.spacing) / __that.option.accuracy,
                             __height,
+                            __left,
+                            __top,
                             __color,
                             __linearGradient,
                             __pos;
 
-                        if (index % (__that.option.waveform.width + 1) !== 0) {
-                            return;
-                        }
-
+                        __left = index * (__width + __option.spacing);
+                        __option.spacing !== 1 && (__left += __option.spacing / 2);
                         __height = height / 256 * __option.maxHeight;
                         __height = __height < __option.minHeight ? __option.minHeight : __height;
+
                         if (__option.verticalAlign === 'middle') {
                             __top = (__that.height - __height) / 2;
                         } else if (__option.verticalAlign === 'top') {
@@ -207,15 +196,15 @@
                         } else {
                             __top = (__that.height - __height) / 2;
                         }
-                        
+
                         __color = __option.color;
 
                         if (__color instanceof Array) {
 
                             __linearGradient = __that.context2d.createLinearGradient(
-                                index,
+                                __left,
                                 __top,
-                                index,
+                                __left,
                                 __top + __height
                             );
 
@@ -243,10 +232,14 @@
                         }
 
                         if (__option.fadeSide) {
-                            __that.context2d.globalAlpha = 1 - Math.abs((index - __that.option.bandwidth / 2)) / (__that.option.bandwidth / 2);
+                            if (index <= __that.option.accuracy / 2) {
+                                __that.context2d.globalAlpha = 1 - (__that.option.accuracy / 2 - 1 - index) / ( __that.option.accuracy / 2);
+                            } else {
+                                __that.context2d.globalAlpha = 1 - (index - __that.option.accuracy / 2) / ( __that.option.accuracy / 2);
+                            }
                         }
 
-                        __that.context2d.fillRect(index, __top, __option.width, __height);
+                        __that.context2d.fillRect(__left, __top, __width, __height);
 
                     });
 
@@ -254,6 +247,26 @@
 
             }
 
+        },
+    
+        // 开始
+        dance : function() {
+            if (this.stat === 0) {
+                this.stat = 1;
+                this.__animate();
+            }
+            return this;
+        },
+
+        // 暂停
+        pause : function() {
+            this.stat = 0;
+            return this;
+        },
+
+        // 改变参数
+        setOption : function(option) {
+            this.option = __mergeOption(this.option, option);
         }
 
     };
