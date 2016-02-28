@@ -63,4 +63,4 @@ vudio.setOption({
 });
 ```
 
-在线示例: https://margox.me/demos/vudio/
+在线示例: http://margox.github.io/vudio.js/
