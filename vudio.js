@@ -237,6 +237,8 @@
                             } else {
                                 __that.context2d.globalAlpha = 1 - (index - __that.option.accuracy / 2) / ( __that.option.accuracy / 2);
                             }
+                        } else {
+                           __that.context2d.globalAlpha = 1;
                         }
 
                         __that.context2d.fillRect(__left, __top, __width, __height);
