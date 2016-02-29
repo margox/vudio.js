@@ -28,8 +28,8 @@ vudio.dance();
 
 开始搅基
 ```javascript
-var audioObj = document.quertSelector('#audio');
-var canvasObj = document.quertSelector('#canvas');
+var audioObj = document.querySelector('#audio');
+var canvasObj = document.querySelector('#canvas');
 var vudio = new Vudio(audioObj, canvasObj, {
     effect : 'waveform', // 当前只有'waveform'这一个效果，哈哈哈
     accuracy : 128, // 精度,实际表现为波形柱的个数，范围16-16348，必须为2的N次方
