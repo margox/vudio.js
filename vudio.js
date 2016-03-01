@@ -25,7 +25,7 @@
     // 默认参数
     var __default_option = {
         effect : 'waveform',
-        accuracy : 32,
+        accuracy : 128,
         width : 256,
         height : 100,
         waveform : {
