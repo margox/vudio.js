@@ -24,20 +24,30 @@
 
     // 默认参数
     var __default_option = {
-        effect : 'waveform', // 当前只有'waveform'这一个效果，哈哈哈
-        accuracy : 128, // 精度，范围16-16348，必须为2的N次方
-        width : 256, // canvas宽度，会覆盖canvas标签中定义的宽度
-        height : 100, // canvas高度，会覆盖canvas标签中定义的高度
+        effect : 'waveform',
+        accuracy : 32,
+        width : 256,
+        height : 100,
         waveform : {
             maxHeight : 80,
             minHeight : 1,
-            spacing: 1,
+            spacing : 1,
             color : '#f00',
             shadowBlur : 0,
             shadowColor : '#f00',
             fadeSide : true,
             horizontalAlign : 'center',
-            verticalAlign: 'middle'
+            verticalAlign : 'middle'
+        },
+        lighting : {
+            maxHeight : 80,
+            lineWidth: 0,
+            color : '#f00',
+            shadowBlur : 0,
+            shadowColor : '#f00',
+            fadeSide : true,
+            horizontalAlign : 'center',
+            verticalAlign : 'middle'
         }
     }
 
@@ -122,6 +132,30 @@
 
         },
 
+        __rebuildData : function (freqByteData, horizontalAlign) {
+
+            var __freqByteData;
+
+            if (horizontalAlign === 'center') {
+                __freqByteData = [].concat(
+                    Array.from(freqByteData).reverse().splice(this.option.accuracy / 2, this.option.accuracy / 2),
+                    Array.from(freqByteData).splice(0, this.option.accuracy / 2)
+                );
+            } else if (horizontalAlign === 'left') {
+                __freqByteData = freqByteData;
+            } else if (horizontalAlign === 'right') {
+                __freqByteData = Array.from(freqByteData).reverse();
+            } else {
+                __freqByteData = [].concat(
+                    Array.from(freqByteData).reverse().splice(this.option.accuracy / 2, this.option.accuracy / 2),
+                    Array.from(freqByteData).splice(0, this.option.accuracy / 2)
+                );
+            }
+
+            return __freqByteData;
+
+        },
+
         __animate : function() {
 
             if (this.stat === 1) {
@@ -144,61 +178,85 @@
 
             return {
 
+                lighting : function(freqByteData) {
+
+                    var __lightingOption = __that.option.lighting;
+                    var __freqByteData = __that.__rebuildData(freqByteData, __lightingOption.horizontalAlign);
+                    var __maxHeight = __lightingOption.maxHeight / 2;
+                    var __isStart = true, __fadeSide = true, __x, __y;
+
+                    if (__lightingOption.horizontalAlign !== 'center') {
+                        __fadeSide = false;
+                    }
+
+                    // clear canvas
+                    __that.context2d.clearRect(0, 0, __that.width, __that.height);
+
+                    // draw lighting
+                    __that.context2d.lineWidth = __lightingOption.lineWidth;
+                    __that.context2d.strokeStyle = __lightingOption.color;
+                    __that.context2d.beginPath();
+                    __freqByteData.forEach(function(value, index) {
+
+                        __x = __that.width / __that.option.accuracy * index;
+                        __y = value / 256 * __maxHeight;
+
+                        if (__lightingOption.verticalAlign === 'middle') {
+                            __y = (__that.height - value) / 2 - __maxHeight / 2;
+                        } else if (__lightingOption.verticalAlign === 'bottom') {
+                            __y =  __that.height - value;
+                        } else if (__lightingOption.verticalAlign === 'top') {
+                            __y = value;
+                        } else {
+                            __y = (__that.height - value) / 2 - __maxHeight / 2;
+                        }
+
+                        if (__isStart) {
+                            __that.context2d.moveTo(__x, __y);
+                            __isStart = false;
+                        } else {
+                            __that.context2d.lineTo(__x, __y);
+                        }
+
+                    });
+                    __that.context2d.stroke();
+
+                },
+
                 waveform : function (freqByteData) {
 
-                    var __freqByteData;
-                    var __fadeSide = __that.option.waveform.fadeSide;
+                    var __waveformOption = __that.option.waveform;
+                    var __fadeSide = __waveformOption.fadeSide;
+                    var __freqByteData = __that.__rebuildData(freqByteData, __waveformOption.horizontalAlign);
+                    var __width, __height, __left, __top, __color, __linearGradient, __pos;
 
-                    // rebuild freqByteData
-                    if (__that.option.waveform.horizontalAlign === 'center') {
-                        __freqByteData = [].concat(
-                            Array.from(freqByteData).reverse().splice(__that.option.accuracy / 2, __that.option.accuracy / 2),
-                            Array.from(freqByteData).splice(0, __that.option.accuracy / 2)
-                        );
-                    } else if (__that.option.waveform.horizontalAlign === 'left') {
-                        __freqByteData = freqByteData;
+                    if (__waveformOption.horizontalAlign !== 'center') {
                         __fadeSide = false;
-                    } else if (__that.option.waveform.horizontalAlign === 'right') {
-                        __freqByteData = Array.from(freqByteData).reverse();
-                        __fadeSide = false;
-                    } else {
-                        __freqByteData = [].concat(
-                            Array.from(freqByteData).reverse().splice(__that.option.accuracy / 2, __that.option.accuracy / 2),
-                            Array.from(freqByteData).splice(0, __that.option.accuracy / 2)
-                        );
                     }
 
                     // clear canvas
                     __that.context2d.clearRect(0, 0, __that.width, __that.height);
 
                     // draw waveform
-                    __freqByteData.forEach(function(height, index){
+                    __freqByteData.forEach(function(value, index){
 
-                        var __option = __that.option.waveform,
-                            __width = (__that.width - __that.option.accuracy * __option.spacing) / __that.option.accuracy,
-                            __height,
-                            __left,
-                            __top,
-                            __color,
-                            __linearGradient,
-                            __pos;
+                        __width = (__that.width - __that.option.accuracy * __waveformOption.spacing) / __that.option.accuracy;
+                        __left = index * (__width + __waveformOption.spacing);
+                        __waveformOption.spacing !== 1 && (__left += __waveformOption.spacing / 2);
+                        __height = value / 256 * __waveformOption.maxHeight;
+                        __height = __height < __waveformOption.minHeight ? __waveformOption.minHeight : __height;
 
-                        __left = index * (__width + __option.spacing);
-                        __option.spacing !== 1 && (__left += __option.spacing / 2);
-                        __height = height / 256 * __option.maxHeight;
-                        __height = __height < __option.minHeight ? __option.minHeight : __height;
-
-                        if (__option.verticalAlign === 'middle') {
+                        if (__waveformOption.verticalAlign === 'middle') {
                             __top = (__that.height - __height) / 2;
-                        } else if (__option.verticalAlign === 'top') {
+                        } else if (__waveformOption.verticalAlign === 'top') {
                             __top = 0;
-                        } else if (__option.verticalAlign === 'bottom') {
+                        } else if (__waveformOption.verticalAlign === 'bottom') {
                             __top = __that.height - __height;
                         } else {
                             __top = (__that.height - __height) / 2;
                         }
 
-                        __color = __option.color;
+                        __color = __waveformOption.color;
 
                         if (__color instanceof Array) {
 
@@ -227,9 +285,9 @@
                             __that.context2d.fillStyle = __color;
                         }
 
-                        if (__option.shadowBlur > 0) {
-                            __that.context2d.shadowBlur = __option.shadowBlur;
-                            __that.context2d.shadowColor = __option.shadowColor;
+                        if (__waveformOption.shadowBlur > 0) {
+                            __that.context2d.shadowBlur = __waveformOption.shadowBlur;
+                            __that.context2d.shadowColor = __waveformOption.shadowColor;
                         }
 
                         if (__fadeSide) {
