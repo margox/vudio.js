@@ -37,7 +37,8 @@
             shadowColor : '#f00',
             fadeSide : true,
             horizontalAlign : 'center',
-            verticalAlign : 'middle'
+            verticalAlign : 'middle',
+            prettify : true
         },
         lighting : {
             maxHeight : 80,
@@ -227,11 +228,13 @@
 
                     var __waveformOption = __that.option.waveform;
                     var __fadeSide = __waveformOption.fadeSide;
+                    var __prettify = __waveformOption.prettify;
                     var __freqByteData = __that.__rebuildData(freqByteData, __waveformOption.horizontalAlign);
-                    var __width, __height, __left, __top, __color, __linearGradient, __pos;
+                    var __maxHeight, __width, __height, __left, __top, __color, __linearGradient, __pos;
 
                     if (__waveformOption.horizontalAlign !== 'center') {
                         __fadeSide = false;
+                        __prettify = false;
                     }
 
                     // clear canvas
@@ -243,7 +246,18 @@
                         __width = (__that.width - __that.option.accuracy * __waveformOption.spacing) / __that.option.accuracy;
                         __left = index * (__width + __waveformOption.spacing);
                         __waveformOption.spacing !== 1 && (__left += __waveformOption.spacing / 2);
-                        __height = value / 256 * __waveformOption.maxHeight;
+                        
+                        if (__prettify) {
+                            if (index <= __that.option.accuracy / 2) {
+                                __maxHeight = (1 - (__that.option.accuracy / 2 - 1 - index) / ( __that.option.accuracy / 2)) * __waveformOption.maxHeight;
+                            } else {
+                                __maxHeight = (1 - (index - __that.option.accuracy / 2) / ( __that.option.accuracy / 2)) * __waveformOption.maxHeight;
+                            }
+                        } else {
+                            __maxHeight = __waveformOption.maxHeight;
+                        }
+
+                        __height = value / 256 * __maxHeight;    
                         __height = __height < __waveformOption.minHeight ? __waveformOption.minHeight : __height;
 
                         if (__waveformOption.verticalAlign === 'middle') {

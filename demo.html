@@ -86,6 +86,7 @@
         <div>
             <button onclick="vudio.dance()">播放效果</button>
             <button onclick="vudio.pause()">暂停效果</button>
+            <button onclick="prettifyWaveform()">美化效果</button>
         </div>
         <div>
             <button class="color color-1" onclick="changeColor(0)"></button>
@@ -126,6 +127,7 @@
             [1, '#6072ff']
         ]
     ];
+    var prettify = false;
     var canvas = $('#canvas');
     var audio = $('#audio');
     var vudio = new Vudio(audio, canvas, {
@@ -134,7 +136,7 @@
         width: 1024,
         height: 600,
         waveform: {
-            maxHeight : 60,
+            maxHeight : 100,
             color: [
                 [0, '#f00'],
                 [0.3, '#f00'],
@@ -171,6 +173,14 @@
                 fadeSide: true
             }
         });
+    }
+    function prettifyWaveform() {
+        vudio.setOption({
+            waveform : {
+                prettify: prettify
+            }
+        });
+        prettify = !prettify;
     }
     </script>
 </body>
