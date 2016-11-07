@@ -9,10 +9,14 @@
 #### 使用方法
 
 ```javascript
-var vudio = new Vudio(HTMLAudioElement, HTMLCanvasElement, [option]);
+var vudio = new Vudio(HTMLAudioElement/MediaStream, HTMLCanvasElement, [option]);
 vudio.dance();
 ```
-以上，第一个和第二个参数是必填项，第三个用于显示效果的个性化配置,具体情况看下方示例
+第一个是音频源，可以是一个Audio标签，或者一个Audio对象，也可以是通过navigator.mediaDevices.getUserMedia获取到的音频MediaStream对象
+
+第二个参数是用于显示可视化内容的Canvas，
+
+第三个参数用于显示效果的个性化配置
 
 #### 示例
 在你的HTML文件中放入canvas和audio标签
