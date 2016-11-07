@@ -54,21 +54,24 @@
 
     /**
      * 构造函数
-     * @param {object} audioElement HTMLAudioElement
+     * @param {object} audioSource HTMLAudioSource/MediaStream
      * @param {object} canvasElement HTMLCanvasElement
      * @param {object} option 可选配置参数
      */
-    function Vudio(audioElement, canvasElement, option) {
+    function Vudio(audioSource, canvasElement, option) {
 
-        if (Object.prototype.toString.call(audioElement) !== '[object HTMLAudioElement]') {
-            throw new TypeError('Invaild Audio Element');
+        if (
+            Object.prototype.toString.call(audioSource) !== '[object HTMLAudioSource]' &&
+            Object.prototype.toString.call(audioSource) !== '[object MediaStream]'
+        ) {
+            throw new TypeError('Invaild Audio Source');
         }
 
         if (Object.prototype.toString.call(canvasElement) !== '[object HTMLCanvasElement]') {
             throw new TypeError('Invaild Canvas Element');
         }
 
-        this.audioEle = audioElement;
+        this.audioSrc = audioSource;
         this.canvasEle = canvasElement;
         this.option = __mergeOption(__default_option, option);
         this.meta = {};
@@ -111,7 +114,7 @@
         __init : function() {
 
             var audioContext = new (window.AudioContext || window.webkitAudioContext || window.mozAudioContext),
-                source = audioContext.createMediaElementSource(this.audioEle),
+                source = Object.prototype.toString.call(audioSource) === '[object HTMLAudioSource]' ? audioContext.createMediaElementSource(this.audioSrc) : audioContext.createMediaStreamSource(this.audioSrc),
                 dpr = window.devicePixelRatio || 1;
 
             this.analyser = audioContext.createAnalyser();
