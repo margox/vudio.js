@@ -1,7 +1,7 @@
 {
   "name": "vudio.js",
-  "version": "1.0.0",
-  "description": "------ #### 概述： - 支持诸多样式调整 - 动画效果基于Canvas和requestAnimationFrame，丝般顺滑 - 仅供娱乐，开心就好",
+  "version": "1.0.1",
+  "description": "仅供娱乐，开心就好",
   "main": "vudio.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
