@@ -60,10 +60,7 @@
      */
     function Vudio(audioSource, canvasElement, option) {
 
-        if (
-            Object.prototype.toString.call(audioSource) !== '[object HTMLAudioSource]' &&
-            Object.prototype.toString.call(audioSource) !== '[object MediaStream]'
-        ) {
+        if (['[object HTMLAudioSource]', '[object MediaStream]'].indexOf(Object.prototype.toString.call(audioSource)) === -1) {
             throw new TypeError('Invaild Audio Source');
         }
 
