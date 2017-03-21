@@ -111,7 +111,7 @@
         __init : function() {
 
             var audioContext = new (window.AudioContext || window.webkitAudioContext || window.mozAudioContext),
-                source = Object.prototype.toString.call(this.audioSrc) === '[object HTMLAudioSource]' ? audioContext.createMediaElementSource(this.audioSrc) : audioContext.createMediaStreamSource(this.audioSrc),
+                source = Object.prototype.toString.call(this.audioSrc) !== '[object MediaStream]' ? audioContext.createMediaElementSource(this.audioSrc) : audioContext.createMediaStreamSource(this.audioSrc),
                 dpr = window.devicePixelRatio || 1;
 
             this.analyser = audioContext.createAnalyser();
