@@ -9,7 +9,7 @@
 #### 使用方法
 
 ```javascript
-var vudio = new Vudio(HTMLAudioElement/MediaStream, HTMLCanvasElement, [option]);
+var vudio = new Vudio(HTMLAudioElement | MediaStream, HTMLCanvasElement, [option]);
 vudio.dance();
 ```
 第一个参数用于指定音频源，可以是一个Audio标签，或者一个Audio对象，也可以是通过navigator.mediaDevices.getUserMedia获取到的音频MediaStream对象
