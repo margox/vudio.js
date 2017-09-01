@@ -8,6 +8,21 @@
 
 #### 使用方法
 
+模块式引入
+```bash
+# 使用npm安装此模块
+npm i vudio.js --save
+# 或者使用yarn安装此模块
+yarn add vudio.js
+```
+```javascript
+import Vudio from 'vudio.js'
+```
+标签式引入
+```html
+<script src="/path/to/vudio.js"></script>
+```
+实例化Vudio
 ```javascript
 var vudio = new Vudio(HTMLAudioElement | MediaStream, HTMLCanvasElement, [option]);
 vudio.dance();
